@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>각인의 서 — 파기된 계약</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Noto+Serif+KR:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- 타이틀 화면 -->
+<div id="titleScreen" class="screen active">
+    <div class="title-bg">
+        <div class="rune-ring ring1"></div>
+        <div class="rune-ring ring2"></div>
+        <div class="rune-ring ring3"></div>
+        <div class="particles" id="titleParticles"></div>
+    </div>
+    <div class="title-content">
+
+        <!-- 로고 -->
+        <div class="title-logo-wrap">
+            <div class="title-emblem">⊗</div>
+            <h1 class="game-title">각인의 서</h1>
+            <div class="game-title-sub">刻印의書</div>
+            <p class="game-subtitle">파기된 계약 — 각인자들의 여정</p>
+        </div>
+
+        <!-- 캐릭터 선택 -->
+        <div class="char-selection">
+            <div class="char-select-label">◈ 각인자를 선택하세요</div>
+            <div class="char-cards" id="charCards">
+                <div class="char-card active" data-key="paladin">
+                    <div class="char-class-badge paladin-badge">서약기사</div>
+                    <div class="char-icon" id="charIconPaladin"></div>
+                    <div class="char-name">가론</div>
+                    <div class="char-desc">생명 70 · 결계 · 치유</div>
+                    <div class="char-lore">무너진 성기사단의 마지막 생존자. 파기된 서약의 각인이 오른팔을 뒤덮고 있다.</div>
+                    <div class="char-tags"><span>▣ 수호</span><span>♥ 치유</span><span>⚔ 강타</span></div>
+                </div>
+                <div class="char-card" data-key="mage">
+                    <div class="char-class-badge mage-badge">균열술사</div>
+                    <div class="char-icon" id="charIconMage"></div>
+                    <div class="char-name">세라</div>
+                    <div class="char-desc">생명 55 · 균열 · 폭발</div>
+                    <div class="char-lore">금지된 공간 균열 마법을 연구하다 각인을 각성시켰다. 그녀의 눈은 이제 두 개의 세계를 본다.</div>
+                    <div class="char-tags"><span>◉ 균열</span><span>◆ 폭발</span><span>❄ 빙결</span></div>
+                </div>
+                <div class="char-card" data-key="ranger">
+                    <div class="char-class-badge ranger-badge">추적자</div>
+                    <div class="char-icon" id="charIconRanger"></div>
+                    <div class="char-name">이안</div>
+                    <div class="char-desc">생명 60 · 부식 · 연사</div>
+                    <div class="char-lore">계약이 파기된 날 모든 것을 잃었다. 이제 그는 근원악을 찾는 각인의 추적자가 되었다.</div>
+                    <div class="char-tags"><span>☠ 부식</span><span>→ 연사</span><span>◌ 회피</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 난이도 선택 (캐릭터 아래) -->
+        <div class="diff-select-panel" id="diffSelectPanel">
+            <div class="diff-select-label">— 난이도 선택 —</div>
+            <div class="diff-select-row" id="diffSelectRow">
+                <!-- JS로 동적 생성 -->
+            </div>
+            <div class="diff-penalty-display" id="diffPenaltyDisplay"></div>
+        </div>
+
+        <!-- 시작 버튼 + 보조 버튼 -->
+        <div class="title-btns">
+            <button class="btn-primary" id="startBtn">
+                <span>여정 시작</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <div class="title-btn-row">
+                <button class="btn-codex" id="tutorialBtn">◈ 튜토리얼</button>
+                <button class="btn-codex" id="codexBtn">◈ 도감</button>
+                <button class="btn-codex" id="upgradeShopBtn">⚒️ 강화 관리</button>
+            </div>
+            <div class="title-upgrade-pts">
+                강화석 <b id="upgradePointsVal">0</b>개 보유
+            </div>
+        </div>
+
+        <!-- 히든: difficultyDisplay는 JS 호환용 -->
+        <div id="upgradeUnlock" style="display:none">
+            <div id="upgradePointsDisplay"></div>
+            <div id="difficultyDisplay"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 지도 화면 -->
+<div id="mapScreen" class="screen">
+    <div class="screen-header">
+        <button class="btn-back" id="mapBackBtn" style="visibility:hidden">←</button>
+        <h2 class="screen-title">◈ 각인의 여정</h2>
+        <div class="header-stats">
+            <span id="mapPlayerName" class="map-char-name">가론</span>
+            <span class="stat-badge"><span class="stat-sym">♥</span> <span id="mapHp">70</span></span>
+            <span class="stat-badge">✦ <span id="mapGold">0</span></span>
+        </div>
+    </div>
+    <div id="mapContainer" class="map-container"></div>
+</div>
+
+<!-- 상점 화면 -->
+<div id="shopScreen" class="screen">
+    <div class="screen-header">
+        <button class="btn-back" id="shopBackBtn">← 지도로</button>
+        <h2 class="screen-title">⊕ 각인 상인</h2>
+        <div class="header-stats">
+            <span class="stat-badge">✦ <span id="shopGold">0</span></span>
+        </div>
+    </div>
+    <div id="shopContent" class="shop-content"></div>
+</div>
+
+<!-- 이벤트 화면 -->
+<div id="eventScreen" class="screen">
+    <div class="screen-header">
+        <button class="btn-back" id="eventBackBtn">← 지도로</button>
+        <h2 class="screen-title">✧ 각인의 기억</h2>
+        <div class="header-stats"></div>
+    </div>
+    <div id="eventContent" class="event-content"></div>
+</div>
+
+<!-- 전투 화면 -->
+<div id="combatScreen" class="screen">
+
+    <!-- 상단 배너 -->
+    <div class="cb-banner" id="actBanner">
+        <div class="cb-banner-left">
+            <span class="cb-act-label" id="actLabel">제1장</span>
+            <span class="cb-sep">·</span>
+            <span class="cb-stage-name" id="actStageName">파기된 숲</span>
+            <span class="cb-sep">·</span>
+            <span class="cb-zone">구역 <b id="stageNum">1</b></span>
+        </div>
+        <div class="cb-banner-center">
+            <span class="cb-turn-badge">흐름 <b id="turnNum">1</b></span>
+            <span class="cb-ascension" id="ascensionBadge" style="display:none"></span>
+        </div>
+        <div class="cb-banner-right">
+            <span class="cb-stat-pill blue">◼ <b id="playerDef">0</b></span>
+            <span class="cb-stat-pill gold">⚡ <b id="playerPower">1</b></span>
+            <span class="cb-stat-pill coin">✦ <b id="combatGold">0</b></span>
+        </div>
+    </div>
+
+    <!-- 메인 아레나 -->
+    <div class="arena">
+
+        <!-- 플레이어 -->
+        <div class="arena-player" id="playerPanel">
+            <div class="arena-sprite player-arena-sprite" id="combatPlayerIcon"></div>
+            <div class="arena-player-hud">
+                <div class="cb-char-name" id="combatPlayerName">가론</div>
+                <div class="cb-hp-bar-wrap">
+                    <div class="cb-hp-bar" id="playerHpBar">
+                        <div class="cb-hp-fill" id="playerHpFill"></div>
+                    </div>
+                    <div class="cb-hp-text">
+                        <span id="playerHp">70</span><span class="cb-hp-sep">/</span><span id="playerMaxHp">70</span>
+                    </div>
+                </div>
+                <div class="relics-mini" id="relicsMini"></div>
+                <div class="status-tags" id="playerStatusTags"></div>
+            </div>
+        </div>
+
+        <!-- 중앙 로그 -->
+        <div class="arena-center">
+            <div class="arena-log" id="logPanel"><div id="logEntries"></div></div>
+            <div id="enemyStatusTags" class="status-tags arena-status"></div>
+        </div>
+
+        <!-- 적 영역 (1~3마리 동적 렌더) -->
+        <div class="enemies-area" id="enemiesArea"></div>
+    </div>
+
+    <!-- 하단 HUD -->
+    <div class="sts-bottom-hud">
+        <div class="sts-hud-row">
+
+            <!-- 에너지 -->
+            <div class="sts-energy-block">
+                <div class="sts-energy-gems" id="energyGems"></div>
+                <div class="sts-energy-label" id="energyLabel">3/3</div>
+            </div>
+
+            <!-- 덱 정보 -->
+            <div class="sts-deck-info">
+                <button class="sts-deck-btn deck-btn" id="deckViewBtn" title="덱 보기">
+                    <span class="deck-btn-icon">◈</span>
+                    <b id="deckCount">0</b>
+                    <span class="deck-btn-label">덱</span>
+                </button>
+                <button class="sts-deck-btn discard-btn" id="discardViewBtn" title="소진패 보기">
+                    <span class="deck-btn-icon">✦</span>
+                    <b id="discardCount">0</b>
+                    <span class="deck-btn-label">소진</span>
+                </button>
+            </div>
+
+            <!-- 컨트롤 -->
+            <div class="sts-controls">
+                <label class="sts-auto-label" title="자동 전투">
+                    <input type="checkbox" id="autoToggle" checked/>
+                    <span class="auto-text">자동</span>
+                </label>
+                <div class="speed-wrap">
+                    <span class="speed-label">속도</span>
+                    <input type="range" id="speedSlider" min="200" max="1500" value="700"/>
+                </div>
+                <button class="sts-endturn-btn" id="endTurnBtn" disabled>
+                    <span class="endturn-text">흐름 종료</span>
+                    <span class="endturn-shortcut">Space</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 손패 -->
+        <div class="sts-hand-area" id="handArea"></div>
+    </div>
+
+</div>
+
+<!-- 보상 화면 -->
+<div id="rewardScreen" class="screen">
+    <div class="screen-header">
+        <h2 class="screen-title">◈ 각인이 공명합니다</h2>
+        <div class="header-stats">
+            <span class="stat-badge">✦ <span id="rewardGold">0</span></span>
+        </div>
+    </div>
+    <div id="rewardContent" class="reward-content"></div>
+</div>
+
+<!-- 게임 오버 -->
+<div id="gameOverScreen" class="screen">
+    <div class="gameover-content" id="gameOverContent"></div>
+</div>
+
+<!-- 도감 모달 -->
+<div id="codexModal" class="codex-modal" style="display:none">
+    <div class="codex-panel">
+        <div class="codex-header">
+            <div class="codex-title">◈ 각인의 서 — 도감</div>
+            <button class="codex-close" id="codexClose">✕</button>
+        </div>
+        <div class="codex-tabs">
+            <button class="codex-tab active" data-ctab="cards">각인패</button>
+            <button class="codex-tab" data-ctab="relics">유물</button>
+            <button class="codex-tab" data-ctab="curses">오염패</button>
+        </div>
+        <div class="codex-filter" id="codexFilter"></div>
+        <div class="codex-body" id="codexBody"></div>
+    </div>
+</div>
+
+<!-- 튜토리얼 모달 -->
+<div id="tutorialModal" class="tutorial-modal" style="display:none">
+    <div class="tutorial-panel">
+        <div class="tutorial-header">
+            <div class="tut-logo">⊗ 각인의 서 — 튜토리얼</div>
+            <button class="tut-skip" id="tutSkipBtn">건너뛰기 ✕</button>
+        </div>
+        <div class="tut-body"></div>
+    </div>
+</div>
+
+<!-- 플로팅 텍스트 -->
+<div id="floatContainer"></div>
+
+<!-- 음악 컨트롤 -->
+<div id="musicControls" class="music-controls">
+    <button id="musicToggleBtn" class="music-btn" title="음악 켜기/끄기">♪</button>
+    <input type="range" id="musicVolume" class="music-volume" min="0" max="1" step="0.05" value="0.35" title="볼륨">
+</div>
+
+<!-- ESC 팝업 -->
+<div id="escModal" class="esc-modal" style="display:none">
+    <div class="esc-panel">
+        <div id="escInner"></div>
+    </div>
+</div>
+
+<script src="chars.js"></script>
+<script src="game.js"></script>
+<script>
+document.getElementById('tutSkipBtn').addEventListener('click', () => {
+    document.getElementById('tutorialModal').style.display = 'none';
+    localStorage.setItem('kakin_tutorial_done', '1');
+});
+</script>
+</body>
+</html>
